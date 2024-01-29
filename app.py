@@ -316,27 +316,45 @@ with col1:
             st.session_state['total_cost'] += cost
             
             
-        
-
-
-
 if st.session_state['generated_app']:
     with response_container:
         for i in range(len(st.session_state['generated_app'])):
-            message(st.session_state["past_app"][i], is_user=True, key=str(i) + '_user')
-            message(st.session_state["past_app_prompt"][i], is_user=True, key=str(i) + '_user_prompt')
-            message(st.session_state["generated_app"][i], key=str(i))
+            expander_key = hash(f"expander_{i}")
+            query_text = st.session_state["past_app"][i]  # Get the query text
+            with st.expander(query_text):
+                message(st.session_state["past_app"][i], is_user=True, key=str(i) + '_user')
+                message(st.session_state["past_app_prompt"][i], is_user=True, key=str(i) + '_user_prompt')
+                message(st.session_state["generated_app"][i], key=str(i))
+                
+                response_already_stored = st.session_state.get('stored_response', [])  # Retrieve stored responses
+                store_response_toggle = st.toggle('Store Response', key=str(i)+'store')
+
+                if store_response_toggle and st.session_state["generated_app"][i] not in response_already_stored:
+                    st.session_state['stored_response'].append(st.session_state["generated_app"][i])
+
+                on = st.toggle('References', key=str(i)+'references')
+                for ref in st.session_state['references'][i]:
+                    if on:
+                        st.success(ref)
+
+
+# if st.session_state['generated_app']:
+#     with response_container:
+#         for i in range(len(st.session_state['generated_app'])):
+#             message(st.session_state["past_app"][i], is_user=True, key=str(i) + '_user')
+#             message(st.session_state["past_app_prompt"][i], is_user=True, key=str(i) + '_user_prompt')
+#             message(st.session_state["generated_app"][i], key=str(i))
             
-            response_already_stored = st.session_state.get('stored_response', [])  # Retrieve stored responses
-            store_response_toggle = st.toggle('Store Response', key=str(i)+'store')
+#             response_already_stored = st.session_state.get('stored_response', [])  # Retrieve stored responses
+#             store_response_toggle = st.toggle('Store Response', key=str(i)+'store')
 
-            if store_response_toggle and st.session_state["generated_app"][i] not in response_already_stored:
-                st.session_state['stored_response'].append(st.session_state["generated_app"][i])
+#             if store_response_toggle and st.session_state["generated_app"][i] not in response_already_stored:
+#                 st.session_state['stored_response'].append(st.session_state["generated_app"][i])
 
-            on = st.toggle('References', key=str(i)+'references')
-            for ref in st.session_state['references'][i]:
-                if on:
-                    st.success(ref)
+#             on = st.toggle('References', key=str(i)+'references')
+#             for ref in st.session_state['references'][i]:
+#                 if on:
+#                     st.success(ref)
 
                         
                         
