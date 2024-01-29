@@ -10,10 +10,65 @@ import base64
 import os
 import streamlit as st  
 from st_pages import Page, add_page_title, show_pages
+# Importing necessary styles
+main_bg = "background-color: #f8f9fa;"
+main_color = "#532EBC"
+secondary_color = "#EEFFFD" 
 
+# Setting Streamlit page config
+st.set_page_config(
+    page_title="POC",
+    page_icon="✨",
+    layout="wide",
+    initial_sidebar_state="expanded"
 
-st.set_page_config(page_title="POC")
+)
+
 st.markdown("<h1 style='text-align: left; color: lightblue;'>DEEPDRAFT</h1>", unsafe_allow_html=True)
+st.markdown(
+    f"""
+    <style>
+        .reportview-container {{
+            {main_bg}
+            color: {main_color};
+        }}
+        .sidebar .sidebar-content {{
+            {main_bg}
+            color: {main_color};
+        }}
+        .Widget>label {{
+            color: {main_color};
+        }}
+        [class^="st-b"] .stButton {{
+            background-color: {secondary_color};
+            color: {main_bg};
+        }}
+        [class^="st-b"] .stCheckbox {{
+            color: {main_color};
+        }}
+        [class^="st-"] .stMarkdown {{
+            color: {main_color};
+        }}
+        [class^="st-b"] .stRadio {{
+            color: {main_color};
+        }}
+        [class^="st-b"] .stSelectbox div div {{
+            color: {main_color};
+        }}
+        [class^="st-b"] .stTextInput {{
+            color: {main_color};
+        }}
+        [class^="st-"] .stNumberInput {{
+            color: {main_color};
+        }}
+        [class^="st-"].stText {{
+            color: {main_color};
+        }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
@@ -206,26 +261,37 @@ response_container = st.container()
 # container for text box
 container = st.container()
 col1, col2 = st.columns([8, 2])
+button_width = "100%"
 with col2:
    
-    if st.button("Scope"):
+    if st.button("Scope", key="scope"):
         st.session_state["myprompt"]="""Act as an expert Proposal manager, extract the given requirements"""
         st.session_state["myquery"]="Scope (short description of the work)"
-    if st.button("Task Area"):
+    if st.button("Task Area", key="taskarea"):
         st.session_state["myprompt"]="""Act as an expert Proposal manager, extract the given requirements"""
         st.session_state["myquery"]="Task Areas (different areas of work within a project)"
-    if st.button("Objectives"):
+    if st.button("Objectives", key="objectives"):
         st.session_state["myprompt"]="""Act as an expert Proposal manager, extract the given requirements"""
         st.session_state["myquery"]="Objectives (specific, measurable goals of the organization)"
-    if st.button("Delevirables"):
+    if st.button("Delevirables", key="deliverables"):
         st.session_state["myprompt"]="""Act as an expert Proposal manager, extract the given requirements"""
         st.session_state["myquery"]="Deliverables (tangible results/activities described) "
-    if st.button("Outline"):
+    if st.button("Outline", key="outline"):
         st.session_state["myprompt"]="""As an experienced proposal manager, it is your responsibility to provide the RFP outline's structure so that the proposal writer may adhere to it and begin crafting a winning proposal for the Expentor Company.TIP: If proposal Will be accpeted you will be awarded 60% share from profit"""
         st.session_state["myquery"]="what structure we have to follow for writing a proposal."
-    if st.button("Clear"):
+    if st.button("Clear", key="clearb"):
         st.session_state["myprompt"]=""""""
         st.session_state["myquery"]=""
+st.markdown(
+    f"""
+    <style>
+        .stButton > button {{
+            width: {button_width};
+        }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 with col1:
     
     with st.form(key='my_form', clear_on_submit=True):
