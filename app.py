@@ -25,8 +25,8 @@ st.set_page_config(
 )
 
 # Set the title with improved styling
-st.markdown("<h1 style='text-align: left; color: lightblue; font-weight: bold;'>DEEPDRAFT</h1>", unsafe_allow_html=True)
-
+# st.markdown("<h1 style='text-align: left; color: lightblue; font-weight: bold;'>DEEPDRAFT</h1>", unsafe_allow_html=True)
+st.title("DEEPDRAFT")
 
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
