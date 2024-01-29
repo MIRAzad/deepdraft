@@ -239,6 +239,24 @@ with col2:
     if st.button("Clear", key="clearb"):
         st.session_state["myprompt"]=""""""
         st.session_state["myquery"]=""
+
+
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.title("Additional queries you can search for -")
+# st.text_area("Additional queries you can search for ")
+default_text = """\
+1. Identify key deadlines mentioned in the RFP.
+2. List any special requirements or conditions outlined in the RFP.
+3. Extract and rank the evaluation criteria specified in the document.
+"""
+
+user_input = st.text_area("", value=default_text, height=120)
+
+# You can use the user_input variable for further processing
+# st.write("You entered:", user_input)
 st.markdown(
     f"""
     <style>
