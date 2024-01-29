@@ -106,7 +106,7 @@ if 'messages_app' not in st.session_state:
 - THE ANSWER SHOULD ONLY COME FROM THE CONTEXT GIVEN AND IF THE CONTEXT IS NOT RELEVANT TO THE QUESTION, DON'T MAKE UP AN ANSWER AND SIMPLY SAY, "I don't have an answer".
 - Answer the question truthfully based on the Context provided by the user.
 - After the explanation check if the Answer is consistent with the Context and doesn't require external knowledge.
-- In a new line write 'SELF-CHECK OK' if the check was successful and 'SELF-CHECK FAILED' if it failed.
+- In a new line write 'End of Response' if the check was successful and 'End of Response FAILED' if it failed.
 '''}]
 if 'model_name' not in st.session_state:
     st.session_state['model_name'] = []
