@@ -13,7 +13,7 @@ from st_pages import Page, add_page_title, show_pages
 
 
 st.set_page_config(page_title="POC")
-st.markdown("<h1 style='text-align: left; color: lightblue;'>POC DEEPDRAFT</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: left; color: lightblue;'>DEEPDRAFT</h1>", unsafe_allow_html=True)
 
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
