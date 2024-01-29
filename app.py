@@ -1,6 +1,7 @@
 
 from main import rag_pipeline
 from main import validate_openai_key
+import pyperclip
 from controller.store_pdf import store_pdfs
 from openai import OpenAI
 import streamlit as st
@@ -320,8 +321,8 @@ if st.session_state['generated_app']:
     with response_container:
         for i in range(len(st.session_state['generated_app'])):
             expander_key = hash(f"expander_{i}")
-            query_text = st.session_state["past_app"][i]  # Get the query text
-            with st.expander(query_text):
+            query_text = f"""Query : {st.session_state["past_app"][i]}"""  # Get the query text
+            with st.expander(query_text, expanded=i == len(st.session_state['generated_app']) - 1):
                 message(st.session_state["past_app"][i], is_user=True, key=str(i) + '_user')
                 message(st.session_state["past_app_prompt"][i], is_user=True, key=str(i) + '_user_prompt')
                 message(st.session_state["generated_app"][i], key=str(i))
@@ -336,6 +337,12 @@ if st.session_state['generated_app']:
                 for ref in st.session_state['references'][i]:
                     if on:
                         st.success(ref)
+                
+                # Copy button
+                copy_button = st.button("Copy", key=f"copybutton {i}")
+                if copy_button:
+                    pyperclip.copy(st.session_state["generated_app"][i])
+                    st.success("Response copied to clipboard!")
 
 
 # if st.session_state['generated_app']:
@@ -372,33 +379,5 @@ with open(f'./pdfFiles/{pdf_name}.pdf', "rb") as f:
 
     # Displaying File
     st.sidebar.markdown(pdf_display, unsafe_allow_html=True)
-
-
-
-# "role": "system", "content": """ "you are an expert information gatherer who gathers all the information from the Request for proposal"  
-#                                      "-the user will provide you a user query and a context"      
-#                                      "-the context contains all the information required for answering the user query"
-#                                      "-your task is to collect all the data and relevant information present in the context and provide it to the user" 
-#                                      "-the minor details against the user query should also be included in your response"
-#                                      "-THE ANSWER SHOULD ONLY COME FROM THE CONTEXT GIVEN AND IF THE CONTEXT IS NOT RELEVANT TO THE QUESTION, DON'T MAKE UP AN ANSWER AND SIMPLY SAY, I don't have an answer."
-#                                      "-Answer the question truthfully based on the Context provided by the user." 
-#                                      "-After the explanation check if the Answer is consistent with the Context and doesn't require external knowledge. "
-#                                      "-In a new line write 'SELF-CHECK OK' if the check was successful and 'SELF-CHECK FAILED' if it failed."
-                                     
-#                                      """
-
-
-
-
-# "role": "system", "content": """You are a helpful assistant "
-#                                      "Give a detailed answer as a professional proposal writer for the question asked by the user."
-#                                      "Answer the question truthfully based on the Context provided by the user." 
-# 	"REMEMBER THE ANSWER HAS TO BE AS DETAILED AS POSSIBLE SUCH THAT IT CAN BE USED IN A PROPOSAL AS-IS."
-# 	"THE ANSWER SHOULD ONLY COME FROM THE CONTEXT GIVEN AND IF THE CONTEXT IS NOT RELEVANT TO THE QUESTION, DON'T MAKE UP AN ANSWER AND SIMPLY SAY, I don't have an answer."
-#     "Strictly make sure you do not skip any required information present in the context"
-#     "DO NOT SUMARIZE YOUR ANSWER"
-#     "After the explanation check if the Answer is consistent with the Context and doesn't require external knowledge. "
-#     "In a new line write 'SELF-CHECK OK' if the check was successful and 'SELF-CHECK FAILED' if it failed."
-# """
 
 
