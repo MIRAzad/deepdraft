@@ -10,10 +10,11 @@ import base64
 import os
 import streamlit as st  
 from st_pages import Page, add_page_title, show_pages
-# Importing necessary styles
+
+# Set the main colors
 main_bg = "background-color: #f8f9fa;"
 main_color = "#532EBC"
-secondary_color = "#EEFFFD" 
+secondary_color = "#EEFFFD"
 
 # Setting Streamlit page config
 st.set_page_config(
@@ -21,10 +22,12 @@ st.set_page_config(
     page_icon="✨",
     layout="wide",
     initial_sidebar_state="expanded"
-
 )
 
-st.markdown("<h1 style='text-align: left; color: lightblue;'>DEEPDRAFT</h1>", unsafe_allow_html=True)
+# Set the title with improved styling
+st.markdown("<h1 style='text-align: left; color: lightblue; font-weight: bold;'>DEEPDRAFT</h1>", unsafe_allow_html=True)
+
+# Set the custom styles
 st.markdown(
     f"""
     <style>
@@ -68,7 +71,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
