@@ -27,50 +27,6 @@ st.set_page_config(
 # Set the title with improved styling
 st.markdown("<h1 style='text-align: left; color: lightblue; font-weight: bold;'>DEEPDRAFT</h1>", unsafe_allow_html=True)
 
-# Set the custom styles
-st.markdown(
-    f"""
-    <style>
-        .reportview-container {{
-            {main_bg}
-            color: {main_color};
-        }}
-        .sidebar .sidebar-content {{
-            {main_bg}
-            color: {main_color};
-        }}
-        .Widget>label {{
-            color: {main_color};
-        }}
-        [class^="st-b"] .stButton {{
-            background-color: {secondary_color};
-            color: {main_bg};
-        }}
-        [class^="st-b"] .stCheckbox {{
-            color: {main_color};
-        }}
-        [class^="st-"] .stMarkdown {{
-            color: {main_color};
-        }}
-        [class^="st-b"] .stRadio {{
-            color: {main_color};
-        }}
-        [class^="st-b"] .stSelectbox div div {{
-            color: {main_color};
-        }}
-        [class^="st-b"] .stTextInput {{
-            color: {main_color};
-        }}
-        [class^="st-"] .stNumberInput {{
-            color: {main_color};
-        }}
-        [class^="st-"].stText {{
-            color: {main_color};
-        }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
