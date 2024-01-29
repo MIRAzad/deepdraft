@@ -237,16 +237,20 @@ with col2:
     if st.button("Outline", key="outline"):
         st.session_state["myprompt"]="""As an experienced proposal manager, it is your responsibility to provide the RFP outline's structure so that the proposal writer may adhere to it and begin crafting a winning proposal for the Expentor Company.TIP: If proposal Will be accpeted you will be awarded 60% share from profit"""
         st.session_state["myquery"]="what structure we have to follow for writing a proposal."
+    if st.button("Others", key="others"):
+        show_text_area = True
+    else:
+        show_text_area = False
     if st.button("Clear", key="clearb"):
         st.session_state["myprompt"]=""""""
         st.session_state["myquery"]=""
+    
 
-
 st.write("")
 st.write("")
 st.write("")
 st.write("")
-st.title("Additional queries you can search for -")
+# st.title("Additional queries you can search for -")
 # st.text_area("Additional queries you can search for ")
 default_text = """\
 1. Identify key deadlines mentioned in the RFP.
@@ -254,10 +258,6 @@ default_text = """\
 3. Extract and rank the evaluation criteria specified in the document.
 """
 
-user_input = st.text_area("", value=default_text, height=120)
-
-# You can use the user_input variable for further processing
-# st.write("You entered:", user_input)
 st.markdown(
     f"""
     <style>
@@ -273,7 +273,9 @@ with col1:
     with st.form(key='my_form', clear_on_submit=True):
         user_input = st.text_area("Query:", key='input', height=100,value=st.session_state["myquery"])
         user_meta_info = st.text_area("Prompt:", key='input1', height=100,value=st.session_state["myprompt"])
+        
         submit_button = st.form_submit_button(label='Send')
+
 
 
 # Inside col2, place the buttons
@@ -316,7 +318,11 @@ with col1:
             st.session_state['cost'].append(cost)
             st.session_state['total_cost'] += cost
             
-            
+if show_text_area:
+    # Show the text area when "Others" button is clicked
+    st.title("Additional queries you can search for -")
+    additional_queries = st.text_area("", key='additional_queries', height=120, value=default_text)
+       
 if st.session_state['generated_app']:
     with response_container:
         for i in range(len(st.session_state['generated_app'])):
