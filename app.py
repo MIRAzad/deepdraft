@@ -9,9 +9,10 @@ import streamlit as st
 from streamlit_chat import message
 import base64
 import os
+import time
 import streamlit as st  
 from st_pages import Page, add_page_title, show_pages
-
+import textwrap
 # Set the main colors
 main_bg = "background-color: #f8f9fa;"
 main_color = "#532EBC"
@@ -221,20 +222,25 @@ container = st.container()
 col1, col2 = st.columns([8, 2])
 button_width = "100%"
 with col2:
-   
+    button_pressed=False
     if st.button("Scope", key="scope"):
+        button_pressed=True
         st.session_state["myprompt"]="""Act as an expert Proposal manager, extract the given requirements"""
         st.session_state["myquery"]="Scope (short description of the work)"
     if st.button("Task Area", key="taskarea"):
+        button_pressed=True
         st.session_state["myprompt"]="""Act as an expert Proposal manager, extract the given requirements"""
         st.session_state["myquery"]="Task Areas (different areas of work within a project)"
     if st.button("Objectives", key="objectives"):
+        button_pressed=True
         st.session_state["myprompt"]="""Act as an expert Proposal manager, extract the given requirements"""
         st.session_state["myquery"]="Objectives (specific, measurable goals of the organization)"
     if st.button("Delevirables", key="deliverables"):
+        button_pressed=True
         st.session_state["myprompt"]="""Act as an expert Proposal manager, extract the given requirements"""
         st.session_state["myquery"]="Deliverables (tangible results/activities described) "
     if st.button("Outline", key="outline"):
+        button_pressed=True
         st.session_state["myprompt"]="""As an experienced proposal manager, it is your responsibility to provide the RFP outline's structure so that the proposal writer may adhere to it and begin crafting a winning proposal for the Expentor Company.TIP: If proposal Will be accpeted you will be awarded 60% share from profit"""
         st.session_state["myquery"]="what structure we have to follow for writing a proposal."
     if st.button("Others", key="others"):
@@ -244,7 +250,7 @@ with col2:
     if st.button("Clear", key="clearb"):
         st.session_state["myprompt"]=""""""
         st.session_state["myquery"]=""
-    
+
 
 st.write("")
 st.write("")
@@ -271,10 +277,18 @@ st.markdown(
 with col1:
     
     with st.form(key='my_form', clear_on_submit=True):
-        user_input = st.text_area("Query:", key='input', height=100,value=st.session_state["myquery"])
-        user_meta_info = st.text_area("Prompt:", key='input1', height=100,value=st.session_state["myprompt"])
         
-        submit_button = st.form_submit_button(label='Send')
+        user_input = st.text_area("Query:", key='input', height=100,value=st.session_state["myquery"],placeholder="Help text")
+        user_meta_info = st.text_area("Prompt:", key='input1', height=100,value=st.session_state["myprompt"],placeholder="Help text")
+        
+        # if button_pressed:
+        #     submit_button = st.form_submit_button(label='Send',type="primary")
+        #     # time.sleep(3)
+        #     # button_pressed=False
+        #     # submit_button = st.form_submit_button(label='Send')
+        # else:
+        submit_button = st.form_submit_button(label='Send',type="primary")
+        
 
 
 
@@ -288,12 +302,7 @@ with col1:
         merged_references=''
         references=''
         if  user_input or user_meta_info:
-            # st.write("IN CONDITION")
-            # # merge the list of references to string
-            # separator = ", "
-            # merged_previous_chat = separator.join(st.session_state['generated_app'])
-            # output_check = check_previous_context(user_input+'\n '+user_meta_info,merged_previous_chat)
-            # if output_check not True:
+           
             if user_input:
                 merged_references, references = rag_pipeline(user_input,pdf_name)
             else:
@@ -304,7 +313,12 @@ with col1:
             output, total_tokens, prompt_tokens, completion_tokens = generate_response(user_input+'\n ',merged_references)
             st.session_state['past_app_prompt'].append(user_meta_info)
             st.session_state['past_app'].append(user_input)
-            st.session_state['generated_app'].append(output)
+            # wrapped_output = textwrap.fill(output, width=80)
+            # markdown_output = f"```markdown\n{wrapped_output}\n```"
+            # output=f"```markdown\n{wrapped_output}\n```"
+            markdown_output = f"```markdown\n{output}\n```"
+
+            st.session_state['generated_app'].append(markdown_output)
             st.session_state['references'].append(references)
             st.session_state['model_name'].append(model_name)
             st.session_state['total_tokens'].append(total_tokens)
@@ -322,7 +336,6 @@ if show_text_area:
     # Show the text area when "Others" button is clicked
     st.title("Additional queries you can search for -")
     additional_queries = st.text_area("", key='additional_queries', height=120, value=default_text)
-       
 if st.session_state['generated_app']:
     with response_container:
         for i in range(len(st.session_state['generated_app'])):
@@ -332,48 +345,19 @@ if st.session_state['generated_app']:
                 message(st.session_state["past_app"][i], is_user=True, key=str(i) + '_user')
                 message(st.session_state["past_app_prompt"][i], is_user=True, key=str(i) + '_user_prompt')
                 message(st.session_state["generated_app"][i], key=str(i))
-                
                 response_already_stored = st.session_state.get('stored_response', [])  # Retrieve stored responses
                 store_response_toggle = st.toggle('Store Response', key=str(i)+'store')
-
                 if store_response_toggle and st.session_state["generated_app"][i] not in response_already_stored:
                     st.session_state['stored_response'].append(st.session_state["generated_app"][i])
-
                 on = st.toggle('References', key=str(i)+'references')
                 for ref in st.session_state['references'][i]:
                     if on:
-                        st.success(ref)
-                
+                        st.success(ref)            
                 # Copy button
                 copy_button = st.button("Copy", key=f"copybutton {i}")
                 if copy_button:
                     pyperclip.copy(st.session_state["generated_app"][i])
                     st.success("Response copied to clipboard!")
-
-
-# if st.session_state['generated_app']:
-#     with response_container:
-#         for i in range(len(st.session_state['generated_app'])):
-#             message(st.session_state["past_app"][i], is_user=True, key=str(i) + '_user')
-#             message(st.session_state["past_app_prompt"][i], is_user=True, key=str(i) + '_user_prompt')
-#             message(st.session_state["generated_app"][i], key=str(i))
-            
-#             response_already_stored = st.session_state.get('stored_response', [])  # Retrieve stored responses
-#             store_response_toggle = st.toggle('Store Response', key=str(i)+'store')
-
-#             if store_response_toggle and st.session_state["generated_app"][i] not in response_already_stored:
-#                 st.session_state['stored_response'].append(st.session_state["generated_app"][i])
-
-#             on = st.toggle('References', key=str(i)+'references')
-#             for ref in st.session_state['references'][i]:
-#                 if on:
-#                     st.success(ref)
-
-                        
-                        
-            # st.write(f"Model used: {st.session_state['model_name'][i]}; Number of tokens: {st.session_state['total_tokens'][i]}; Cost: ${st.session_state['cost'][i]:.5f}")
-            # counter_placeholder.write(f"Total cost of this conversation: ${st.session_state['total_cost']:.5f}")
-
 # Opening file from file path
 with open(f'./pdfFiles/{pdf_name}.pdf', "rb") as f:
     base64_pdf = base64.b64encode(f.read()).decode('utf-8')
