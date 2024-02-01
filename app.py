@@ -9,6 +9,7 @@ import streamlit as st
 from streamlit_chat import message
 import base64
 import os
+import json
 import time
 import streamlit as st  
 from st_pages import Page, add_page_title, show_pages
@@ -17,7 +18,7 @@ import textwrap
 main_bg = "background-color: #f8f9fa;"
 main_color = "#532EBC"
 secondary_color = "#EEFFFD"
-
+final_content_button=False
 # Setting Streamlit page config
 st.set_page_config(
     page_title="POC",
@@ -65,6 +66,8 @@ if st.session_state['logged_in'] is False:
 
 
 
+# st.sidebar.title("Final accumulated content")
+# st.button("Final_response", key="Show")
 
 st.sidebar.title("Options")
 os.environ['OPENAI_API_KEY']=st.secrets["OPENAI_API_KEY"]
@@ -90,9 +93,15 @@ else:
 
 if 'myquery' not in st.session_state:
     st.session_state['myquery'] = " "
+
 if 'myprompt' not in st.session_state:
     st.session_state['myprompt'] = " "
-
+if "output" not in st.session_state:
+    st.session_state['output'] = None
+if 'description' not in st.session_state:
+    st.session_state['description']= []
+if "options" not in st.session_state:
+    st.session_state['options']=[]
 if 'generated_app' not in st.session_state:
     st.session_state['generated_app'] = []
 if 'past_app' not in st.session_state:
@@ -189,6 +198,21 @@ st.session_state['option_pdf'] = st.sidebar.selectbox('Choose RFP',(st.session_s
 
 pdf_name=st.session_state['option_pdf']
 
+def further_search(prev_response):
+    print("calling llm for scope")
+    prompt=f"""Summarize key headings and provide brief descriptions based on the given text, aiding users in targeted research and exploration.GIven text: {prev_response}"""
+    user_input=[{"role": "system", "content": "Output must be in json format only and the description must be of few words or a single line only.Please do not add any preamble,example {main_heading:description}"},
+                {"role":"user","content":prompt}]
+    responses = client.chat.completions.create(
+    model="gpt-3.5-turbo-1106",# "gpt-3.5-turbo-1106",#gpt-4-1106-preview
+    messages=user_input,
+    stream=False,
+    seed=1089,
+    temperature=0.2)
+    
+    extracted = responses.choices[0].message.content
+    return extracted
+
 
 # generate a response
 def generate_response(prompt, merged_references):
@@ -243,6 +267,8 @@ with col2:
         button_pressed=True
         st.session_state["myprompt"]="""As an experienced proposal manager, it is your responsibility to provide the RFP outline's structure so that the proposal writer may adhere to it and begin crafting a winning proposal for the Expentor Company.TIP: If proposal Will be accpeted you will be awarded 60% share from profit"""
         st.session_state["myquery"]="what structure we have to follow for writing a proposal."
+    if st.button("Final content", key="final_content"):
+        final_content_button = True
     if st.button("Others", key="others"):
         show_text_area = True
     else:
@@ -278,8 +304,8 @@ with col1:
     
     with st.form(key='my_form', clear_on_submit=True):
         
-        user_input = st.text_area("Query:", key='input', height=100,value=st.session_state["myquery"],placeholder="Help text")
-        user_meta_info = st.text_area("Prompt:", key='input1', height=100,value=st.session_state["myprompt"],placeholder="Help text")
+        user_input = st.text_area("Query:", key='input', height=130,value=st.session_state["myquery"],placeholder="Help text")
+        user_meta_info = st.text_area("Prompt:", key='input1', height=130,value=st.session_state["myprompt"],placeholder="Help text")
         
         # if button_pressed:
         #     submit_button = st.form_submit_button(label='Send',type="primary")
@@ -288,7 +314,6 @@ with col1:
         #     # submit_button = st.form_submit_button(label='Send')
         # else:
         submit_button = st.form_submit_button(label='Send',type="primary")
-        
 
 
 
@@ -310,7 +335,12 @@ with col1:
                 references=''
             
             # output, total_tokens, prompt_tokens, completion_tokens = generate_response(user_input+'\n '+user_meta_info,merged_references)
+            st.session_state['description'] = []
             output, total_tokens, prompt_tokens, completion_tokens = generate_response(user_input+'\n ',merged_references)
+            
+            st.session_state["output"]=output
+           
+    
             st.session_state['past_app_prompt'].append(user_meta_info)
             st.session_state['past_app'].append(user_input)
             # wrapped_output = textwrap.fill(output, width=80)
@@ -331,7 +361,8 @@ with col1:
 
             st.session_state['cost'].append(cost)
             st.session_state['total_cost'] += cost
-            
+
+# st.write(st.session_state["description"][0])
 if show_text_area:
     # Show the text area when "Others" button is clicked
     st.title("Additional queries you can search for -")
@@ -359,6 +390,94 @@ if st.session_state['generated_app']:
                     pyperclip.copy(st.session_state["generated_app"][i])
                     st.success("Response copied to clipboard!")
 # Opening file from file path
+if final_content_button:
+    # markdown_output = f"```markdown\n{st.session_state['stored_response']}\n```"
+    st.write(st.session_state['stored_response'])
+
+if st.session_state['output']:
+    words_to_search=further_search(st.session_state['output'])
+    data = json.loads(words_to_search)
+    # st.title("Further things you can look for:")
+    # st.write(data)
+    # st.write("")
+    # st.write("")
+    st.title("Further things you can look for:")
+    i=0
+    if submit_button:
+        for key, descrip in data.items():
+            
+            if not isinstance(st.session_state['description'], list):
+                st.session_state['description'] = []
+            st.session_state['description'].append(descrip)
+        # st.button(descrip,key=key)
+            # st.session_state["myprompt"]="""As an experienced proposal manager, it is your responsibility to provide the RFP outline's structure so that the proposal writer may adhere to it and begin crafting a winning proposal for the Expentor Company.TIP: If proposal Will be accpeted you will be awarded 60% share from profit"""
+            # st.session_state["myquery"]=descrip
+            # st.session_state["myquery"]=descrip 
+            # st.write(descrip)
+# st.write("description descp")
+# st.write("")
+# st.write(st.session_state["description"])
+# st.write(st.session_state["description"][0])
+
+# for i in range(len(st.session_state["description"])):
+#     if st.button(st.session_state["description"][i],key=st.session_state["description"][i]):
+#         st.session_state["myprompt"]="""As an experienced proposal manager, it is your responsibility to provide the RFP outline's structure so that the proposal writer may adhere to it and begin crafting a winning proposal for the Expentor Company.TIP: If proposal Will be accpeted you will be awarded 60% share from profit"""
+#         st.session_state["myquery"]=st.session_state["description"][i]
+# print("+++++++++++++++++++++++++++++++++++++++++++++++++++_______________________++++++++++++++++++++++++++++++")
+# if st.session_state["description"]!=[]:
+#     for i in range(len(st.session_state["description"])):
+#         button_clicked = st.button(st.session_state["description"][i], key=f"button_{i}")
+#         if button_clicked:
+#             st.session_state["myprompt"] = """As an experienced proposal manager, it is your responsibility to provide the RFP outline's structure so that the proposal writer may adhere to it and begin crafting a winning proposal for the Expentor Company.TIP: If the proposal is accepted, you will be awarded a 60% share of the profit."""
+#             st.session_state["myquery"] = st.session_state["description"][i]
+# st.write(type(st.session_state["description"]))
+
+# @st.experimental_singleton
+# def update_session_state():
+#     if st.session_state["description"]:
+#         st.success('description not empty')
+        
+#         optionss = ["Select any:"] + st.session_state["description"]
+        
+#         # Handle option selection
+#         selected_option = st.selectbox(
+#             'Search for more:',
+#             optionss, index=0, placeholder='Select one question...', key='jbhvgcfxd'
+#         )
+        
+#         if selected_option != "Select any:":
+#             st.write('You selected:', selected_option)
+#             # Update session state values
+#             st.session_state["myquery"] = selected_option
+#             st.session_state["myprompt"] = """Act as an expert Proposal manager, extract the given requirements"""
+# print("+++++++++++++++++++++++++++++++++++++++++++++++++++_______________________++++++++++++++++++++++++++++++")
+
+if st.session_state["description"]:
+    # st.success('description not empty')
+    
+    optionss = ["Select any:"] + st.session_state["description"]
+    
+    # Handle option selection
+    selected_option = st.selectbox(
+        'Search for more:',
+        optionss, index=0, placeholder='Select one question...', key='jbhvgcfxd'
+    )
+    
+    if selected_option != "Select any:":
+        # st.write('You selected:', selected_option)
+        # Update temporary variable
+        st.session_state["temp_query"] = selected_option
+
+# Use a button to trigger the final update
+    if st.button("Search now"):
+        st.session_state["myquery"] = st.session_state["temp_query"]
+
+
+
+
+
+# Call the function to update session state
+
 with open(f'./pdfFiles/{pdf_name}.pdf', "rb") as f:
     base64_pdf = base64.b64encode(f.read()).decode('utf-8')
     pdf_display = F'<iframe src="data:application/pdf;base64,{base64_pdf}"  style=" width: 100%; height: 400px;" type="application/pdf"></iframe>'
