@@ -455,25 +455,53 @@ if st.session_state['output']:
 #             st.session_state["myprompt"] = """Act as an expert Proposal manager, extract the given requirements"""
 # print("+++++++++++++++++++++++++++++++++++++++++++++++++++_______________________++++++++++++++++++++++++++++++")
 
-if st.session_state["description"]:
-    # st.success('description not empty')
+# if st.session_state["description"]:
+#     # st.success('description not empty')
     
-    optionss = ["Select any:"] + st.session_state["description"]
+#     optionss = ["Select any:"] + st.session_state["description"]
     
-    # Handle option selection
-    selected_option = st.selectbox(
-        'Search for more:',
-        optionss, index=0, placeholder='Select one question...', key='jbhvgcfxd'
-    )
+#     # Handle option selection
+#     selected_option = st.selectbox(
+#         'Search for more:',
+#         optionss, index=0, placeholder='Select one question...', key='jbhvgcfxd'
+#     )
     
-    if selected_option != "Select any:":
-        # st.write('You selected:', selected_option)
-        # Update temporary variable
-        st.session_state["temp_query"] = selected_option
+#     if selected_option != "Select any:":
+#         # st.write('You selected:', selected_option)
+#         # Update temporary variable
+#         st.session_state["temp_query"] = selected_option
 
-# Use a button to trigger the final update
+# # Use a button to trigger the final update
+#     if st.button("Search now"):
+#         st.session_state["myquery"] = st.session_state["temp_query"]
+
+# Split the screen into two columns
+col3, col4 = st.columns([8,2])
+
+# Inside col1, place the selectbox and button horizontally
+with col3:
+    if st.session_state["description"]:
+        optionss = ["Select any:"] + st.session_state["description"]
+        
+        # Handle option selection
+        selected_option = st.selectbox(
+            '',
+            optionss, index=0, placeholder='Select one question...', key='jbhvgcfxd'
+        )
+        
+        if selected_option != "Select any:":
+            # Update temporary variable
+            st.session_state["temp_query"] = selected_option
+
+    # Use a button to trigger the final update
+    
+# Inside col2, place any additional content you want to display
+with col4:
+    st.write("")
+    st.write("")
     if st.button("Search now"):
         st.session_state["myquery"] = st.session_state["temp_query"]
+
 
 
 
