@@ -381,7 +381,7 @@ if st.session_state['generated_app']:
                 if store_response_toggle and st.session_state["generated_app"][i] not in response_already_stored:
                     st.session_state['stored_response'].append(modified_text)
                 on = st.toggle('References', key=str(i)+'references')
-                clear_response=st.toggle('Clear stored response(s)', key="respo_clear")
+                clear_response=st.toggle('Clear stored response(s)', key=str(i)+"respo_clear")
                 if clear_response:
                     st.session_state['stored_response']=[]
                 for ref in st.session_state['references'][i]:
