@@ -348,7 +348,7 @@ with col1:
             # output=f"```markdown\n{wrapped_output}\n```"
             markdown_output = f"```markdown\n{output}\n```"
 
-            st.session_state['generated_app'].append(markdown_output)
+            st.session_state['generated_app'].append(output)
             st.session_state['references'].append(references)
             st.session_state['model_name'].append(model_name)
             st.session_state['total_tokens'].append(total_tokens)
@@ -375,20 +375,23 @@ if st.session_state['generated_app']:
             with st.expander(query_text, expanded=i == len(st.session_state['generated_app']) - 1):
                 message(st.session_state["past_app"][i], is_user=True, key=str(i) + '_user')
                 message(st.session_state["past_app_prompt"][i], is_user=True, key=str(i) + '_user_prompt')
-                message(st.session_state["generated_app"][i], key=str(i))
+                modified_text=st.text_area(f"Generated Response {i}", st.session_state["generated_app"][i],height=300)
                 response_already_stored = st.session_state.get('stored_response', [])  # Retrieve stored responses
                 store_response_toggle = st.toggle('Store Response', key=str(i)+'store')
                 if store_response_toggle and st.session_state["generated_app"][i] not in response_already_stored:
-                    st.session_state['stored_response'].append(st.session_state["generated_app"][i])
+                    st.session_state['stored_response'].append(modified_text)
                 on = st.toggle('References', key=str(i)+'references')
+                clear_response=st.toggle('Clear stored response(s)', key="respo_clear")
+                if clear_response:
+                    st.session_state['stored_response']=[]
                 for ref in st.session_state['references'][i]:
                     if on:
                         st.success(ref)            
                 # Copy button
-                copy_button = st.button("Copy", key=f"copybutton {i}")
-                if copy_button:
-                    pyperclip.copy(st.session_state["generated_app"][i])
-                    st.success("Response copied to clipboard!")
+                # copy_button = st.button("Copy", key=f"copybutton {i}")
+                # if copy_button:
+                #     pyperclip.copy(st.session_state["generated_app"][i])
+                #     st.success("Response copied to clipboard!")
 # Opening file from file path
 if final_content_button:
     # markdown_output = f"```markdown\n{st.session_state['stored_response']}\n```"
