@@ -497,10 +497,11 @@ with col3:
     
 # Inside col2, place any additional content you want to display
 with col4:
-    st.write("")
-    st.write("")
-    if st.button("Search now"):
-        st.session_state["myquery"] = st.session_state["temp_query"]
+    if st.session_state["description"]:
+        st.write("")
+        st.write("")
+        if st.button("Search now"):
+            st.session_state["myquery"] = st.session_state["temp_query"]
 
 
 
