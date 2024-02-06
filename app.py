@@ -29,7 +29,8 @@ st.set_page_config(
 
 # Set the title with improved styling
 # st.markdown("<h1 style='text-align: left; color: lightblue; font-weight: bold;'>DEEPDRAFT</h1>", unsafe_allow_html=True)
-st.title(" DEEPDRAFT ")
+st.title(":rainbow[DeepDraft]")
+
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
 
@@ -395,7 +396,7 @@ if st.session_state['generated_app']:
 # Opening file from file path
 if final_content_button:
     # markdown_output = f"```markdown\n{st.session_state['stored_response']}\n```"
-    st.write(st.session_state['stored_response'])
+    st.write_stream(st.session_state['stored_response'])
 
 if st.session_state['output']:
     words_to_search=further_search(st.session_state['output'])
