@@ -39,13 +39,13 @@ if st.session_state['logged_in'] is False:
     username = st.secrets["user_id"]
     password = st.secrets["password"]
     
-    st.sidebar.title("Login")
+    st.sidebar.title("_Login_")
 
     # Create input fields for username and password
-    entered_username = st.sidebar.text_input("Username")
-    entered_password = st.sidebar.text_input("Password", type="password")
+    entered_username = st.sidebar.text_input("_Username_")
+    entered_password = st.sidebar.text_input("_Password_", type="password")
 
-    login_button = st.sidebar.button("Login")
+    login_button = st.sidebar.button("_Login_")
 
 
 
