@@ -1,0 +1,14 @@
+{ 
+    "recursive_text_splitter_chunk_size":150,
+    "recursive_text_splitter_overlap":30,
+    "ST_model_name": "BAAI/bge-large-zh-v1.5",
+    "embedding_shape": 1536,
+    "references_count": -60,
+    "lambda_mult_mmr": 0.8,
+    "k_mmr": 15,      
+    "cross_encoder_rerank_model": "BAAI/bge-reranker-base",
+    "crossencoder_references_count":-16,
+    "gpt_model": "gpt-3.5-turbo-16k"
+}
+
+    
